@@ -21,7 +21,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 {
     HRESULT hRes = OleInitialize(NULL);
     SASSERT(SUCCEEDED(hRes));
-
+	SouiFactory souiFac;
     int nRet = 0;
     
     SComMgr *pComMgr = new SComMgr;
@@ -30,13 +30,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     TCHAR szCurrentDir[MAX_PATH] = { 0 };
     GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
     LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
-    _tcscpy(lpInsertPos + 1, _T("..\\Demos\\MultiLangs"));
+    _tcscpy(lpInsertPos + 1, _T(".."));
     SetCurrentDirectory(szCurrentDir);
     {
         BOOL bLoaded=FALSE;
-        CAutoRefPtr<SOUI::IImgDecoderFactory> pImgDecoderFactory;
-        CAutoRefPtr<SOUI::IRenderFactory> pRenderFactory;
-		CAutoRefPtr<ITranslatorMgr> trans;                  //多语言翻译模块，由translator.dll提供
+        SAutoRefPtr<SOUI::IImgDecoderFactory> pImgDecoderFactory;
+        SAutoRefPtr<SOUI::IRenderFactory> pRenderFactory;
+		SAutoRefPtr<ITranslatorMgr> trans;                  //多语言翻译模块，由translator.dll提供
 
         bLoaded = pComMgr->CreateRender_Skia((IObjRef**)&pRenderFactory);
         SASSERT_FMT(bLoaded,_T("load interface [render] failed!"));
@@ -51,8 +51,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
         HMODULE hModSysResource = LoadLibrary(SYS_NAMED_RESOURCE);
         if (hModSysResource)
         {
-            CAutoRefPtr<IResProvider> sysResProvider;
-            CreateResProvider(RES_PE, (IObjRef**)&sysResProvider);
+            SAutoRefPtr<IResProvider> sysResProvider;
+            souiFac.CreateResProvider(RES_PE, (IObjRef**)&sysResProvider);
             sysResProvider->Init((WPARAM)hModSysResource, 0);
             theApp->LoadSystemNamedResource(sysResProvider);
             FreeLibrary(hModSysResource);
@@ -61,16 +61,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
             SASSERT(0);
         }
 
-        CAutoRefPtr<IResProvider>   pResProvider;
+        SAutoRefPtr<IResProvider>   pResProvider;
 #if (RES_TYPE == 0)
-        CreateResProvider(RES_FILE, (IObjRef**)&pResProvider);
+        souiFac.CreateResProvider(RES_FILE, (IObjRef**)&pResProvider);
         if (!pResProvider->Init((LPARAM)_T("uires"), 0))
         {
             SASSERT(0);
             return 1;
         }
 #else 
-        CreateResProvider(RES_PE, (IObjRef**)&pResProvider);
+        souiFac.CreateResProvider(RES_PE, (IObjRef**)&pResProvider);
         pResProvider->Init((WPARAM)hInstance, 0);
 #endif
 
@@ -80,12 +80,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		if (trans)
 		{//加载中文语言翻译包
 			theApp->SetTranslator(trans);
-			pugi::xml_document xmlLang;
+			SXmlDoc xmlLang;
 			if (theApp->LoadXmlDocment(xmlLang, _T("lang:cn")))
 			{
-				CAutoRefPtr<ITranslator> langCN;
+				SAutoRefPtr<ITranslator> langCN;
 				trans->CreateTranslator(&langCN);
-				langCN->Load(&xmlLang.child(L"language"), 1);//1=LD_XML
+				langCN->Load(&xmlLang.root().child(L"language"), 1);//1=LD_XML
 				trans->InstallTranslator(langCN);
 			}
 		}

@@ -6,6 +6,7 @@
 #include "MainDlg.h"
 #include <helper/SMenuEx.h>
 #include <helper/SAdapterBase.h>
+#include <helper/SHostMgr.h>
 
 #ifdef DWMBLUR	//win7毛玻璃开关
 #include <dwmapi.h>
@@ -40,17 +41,17 @@ public:
 		}
 	}
 
-	virtual int getCount()
+	virtual int WINAPI getCount()
 	{
 		return m_studuents.GetCount();
 	}
 
 
-	virtual void getView(int position, SWindow * pItem, pugi::xml_node xmlTemplate)
+	virtual void WINAPI getView(int position, SItemPanel * pItem, SXmlNode xmlTemplate)
 	{
 		if (pItem->GetChildrenCount() == 0)
 		{
-			pItem->InitFromXml(xmlTemplate);
+			pItem->InitFromXml(&xmlTemplate);
 		}
 
 		student & st = m_studuents[position];
@@ -60,7 +61,7 @@ public:
 		pItem->FindChildByName(L"txt_age")->SetWindowText(SStringT().Format(_T("%d"), st.age));
 	}
 
-	virtual SStringW GetColumnName(int iCol) const override
+	virtual SStringW WINAPI GetColumnName(int iCol) const override
 	{
 		return SStringW().Format(L"col%d", iCol + 1);
 	}
@@ -68,15 +69,19 @@ public:
 	struct SORTCTX
 	{
 		int iCol;
-		SHDSORTFLAG stFlag;
+		UINT stFlag;
 	};
 
-	bool OnSort(int iCol, SHDSORTFLAG * stFlags, int nCols)
+	enum {ST_NULL=0,
+		ST_UP,
+		ST_DOWN,
+	};
+	BOOL WINAPI OnSort(int iCol, UINT * stFlags, int nCols)
 	{
 		if (iCol == 5) //最后一列“操作”不支持排序
 			return false;
 
-		SHDSORTFLAG stFlag = stFlags[iCol];
+		UINT stFlag = stFlags[iCol];
 		switch (stFlag)
 		{
 		case ST_NULL:stFlag = ST_UP; break;
@@ -147,10 +152,9 @@ int CMainDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 const wchar_t * strSrc = L"test input";
 BOOL CMainDlg::OnInitDialog(HWND hWnd, LPARAM lParam)
 {
-	SStringT strTr = S_CW2T(TR(strSrc, L"user"));
-	SWindow *wnd = FindChildByID(R.id.txt_test);
-	FindChildByID(R.id.txt_test)->SetWindowText(strTr);
 	InitListView();
+
+	OnLanguage(R.id.lang_cn);
 	return 0;
 }
 
@@ -163,12 +167,10 @@ void CMainDlg::InitListView()
 	pAdapter->Release();
 }
 
-HRESULT CMainDlg::OnLanguageChanged()
+void CMainDlg::OnLanguageChanged()
 {
-	__super::OnLanguageChanged();
 	SStringT strTr = S_CW2T(TR(strSrc, L"user"));
 	FindChildByID(R.id.txt_test)->SetWindowText(strTr);
-	return 3;
 }
 
 void CMainDlg::OnLanguage(int nID)
@@ -177,23 +179,26 @@ void CMainDlg::OnLanguage(int nID)
 	m_LangID = nID;
 	bool bCnLang = nID == R.id.lang_cn;
 
-	pugi::xml_document xmlLang;
+	SXmlDoc xmlLang;
 	if (SApplication::getSingletonPtr()->LoadXmlDocment(xmlLang, bCnLang?_T("lang:cn"):_T("lang:en")))
 	{
 		CAutoRefPtr<ITranslator> lang;
 		pTransMgr->CreateTranslator(&lang);
-		lang->Load(&xmlLang.child(L"language"), 1);//1=LD_XML
+		lang->Load(&xmlLang.root().child(L"language"), 1);//1=LD_XML
 		wchar_t szName[64];
 		lang->GetName(szName);
-		pTransMgr->SetLanguage(szName);
+		SStringW strName(szName);
+		pTransMgr->SetLanguage(&strName);
 		pTransMgr->InstallTranslator(lang);
 
 		SHostMgr::getSingletonPtr()->DispatchMessage(true,UM_SETLANGUAGE);
-		SStringW strFontInfo = lang->getFontInfo();
+		SStringW strFontInfo;
+		lang->getFontInfo(&strFontInfo);
 		if(!strFontInfo.IsEmpty())
 		{
 			SFontPool::getSingletonPtr()->SetDefFontInfo(strFontInfo);
 		}
+		OnLanguageChanged();
 	}
 }
 
@@ -281,7 +286,7 @@ void CMainDlg::OnBtnScale(int nID)
 		nScale = 200;
 		break;
 	}
-	int nCurScale = GetScale();
+	int nCurScale = GetRoot()->GetScale();
 	CRect rcWnd = GetWindowRect();
 	int OriWid = rcWnd.Width() * 100 / nCurScale;
 	int OriHei = rcWnd.Height() * 100/ nCurScale;
@@ -289,7 +294,7 @@ void CMainDlg::OnBtnScale(int nID)
 	int nNewWid = OriWid * nScale / 100;
 	int nNewHei = OriHei * nScale / 100;
 
-	SDispatchMessage(UM_SETSCALE,nScale,0);
+	GetRoot()->SDispatchMessage(UM_SETSCALE,nScale,0);
 
 	if(!SNativeWnd::IsZoomed()){
 		SetWindowPos(0, 0, 0, nNewWid, nNewHei, SWP_NOZORDER | SWP_NOMOVE);

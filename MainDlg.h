@@ -21,7 +21,7 @@ public:
 	BOOL OnInitDialog(HWND wndFocus, LPARAM lInitParam);
 
 protected:
-	virtual HRESULT OnLanguageChanged();
+	void OnLanguageChanged();
 
 	void OnBtnScale(int nID);
 	void OnLanguage(int nID);
