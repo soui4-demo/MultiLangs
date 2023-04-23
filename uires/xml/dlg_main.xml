@@ -40,10 +40,11 @@
         <page title="page1">
           <img skin="scale_pic" pos="|0,|0" offset="-0.5,-0.5"/>
           <window pos="20,20,@100dp,@30dp" colorBkgnd="rgba(255,0,0,128)">100dp*30dp</window>
+          <button pos="-0,-0,@100dp,@30dp" offset="-1,-1" text="button" id="1000"/>
         </page>
         <page title="page2">
           <mclistview name="mclv_test" colorBkgnd="@color/white" pos="10,10,-10,-10" headerHeight="30dp">
-            <header align="center" itemSwapEnable="1" fixWidth="0" font="underline:0,adding:-3" sortHeader="1" colorBkgnd="#ffffff" >
+            <headerStyle align="center" itemSwapEnable="1" fixWidth="0" font="underline:0,adding:-3" sortHeader="1" colorBkgnd="#ffffff" >
               <items>
                 <item width="150">name</item>
                 <item width="150">gender</item>
@@ -51,7 +52,7 @@
                 <item width="150">score</item>
                 <item width="200">Flag</item>
               </items>
-            </header>
+            </headerStyle>
             <template itemHeight="80dp" colorHover="#cccccc" colorSelected="#0000ff">
               <window name="col1" clipClient="1">
                 <text name="txt_name" pos="5,|0" offset="0,-0.5" font="bold:1,adding:-1"/>

@@ -188,7 +188,7 @@ void CMainDlg::OnLanguage(int nID)
 		wchar_t szName[64];
 		lang->GetName(szName);
 		SStringW strName(szName);
-		pTransMgr->SetLanguage(&strName);
+		pTransMgr->SetLanguage(strName);
 		pTransMgr->InstallTranslator(lang);
 
 		SHostMgr::getSingletonPtr()->DispatchMessage(true,UM_SETLANGUAGE);
@@ -249,8 +249,8 @@ void CMainDlg::OnBtnMenu()
 	CPoint pt;
 	GetCursorPos(&pt);
 
-	SMenuEx *pLangMenu = menu.GetSubMenu(50);
-	pLangMenu->GetMenuItem(m_LangID)->SetAttribute(L"check",L"1");
+	SMenuEx *pLangMenu = menu.GetSubMenu(50,TRUE);
+	pLangMenu->GetMenuItem(m_LangID,TRUE)->SetAttribute(L"check",L"1");
 
 	menu.TrackPopupMenu(0,pt.x,pt.y,m_hWnd,GetScale());
 }
