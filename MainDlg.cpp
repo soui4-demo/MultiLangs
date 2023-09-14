@@ -196,7 +196,7 @@ void CMainDlg::OnLanguage(int nID)
 		lang->getFontInfo(&strFontInfo);
 		if(!strFontInfo.IsEmpty())
 		{
-			SFontPool::getSingletonPtr()->SetDefFontInfo(strFontInfo);
+			GETUIDEF->SetDefFontInfo(strFontInfo);
 		}
 		OnLanguageChanged();
 	}
@@ -286,7 +286,27 @@ void CMainDlg::OnBtnScale(int nID)
 		nScale = 200;
 		break;
 	}
+
 	int nCurScale = GetRoot()->GetScale();
+	if(nCurScale==nScale)
+		return;
+
+	if(m_scalePool){
+		GETUIDEF->PopSkinPool(m_scalePool);
+		m_scalePool = NULL;
+	}
+	if(nScale!=100){
+		//load scale specified skins
+		SXmlDoc xmlDoc;
+		SStringT skinRes = SStringT().Format(_T("values:skin_%d"),nScale);
+		if(SApplication::getSingleton().LoadXmlDocment(xmlDoc,skinRes))
+		{
+			m_scalePool.Attach(GETUIDEF->CreateSkinPool(FALSE));
+			m_scalePool->LoadSkins(&xmlDoc.root().child(L"skin"));
+			GETUIDEF->PushSkinPool(m_scalePool);
+		}
+	}
+
 	CRect rcWnd = GetWindowRect();
 	int OriWid = rcWnd.Width() * 100 / nCurScale;
 	int OriHei = rcWnd.Height() * 100/ nCurScale;

@@ -53,4 +53,5 @@ protected:
 	END_MSG_MAP()
 private:
 	int	m_LangID;
+	SAutoRefPtr<ISkinPool> m_scalePool;
 };

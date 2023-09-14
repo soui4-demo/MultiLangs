@@ -10,6 +10,9 @@
     <file name="string" path="values\string.xml"/>
     <file name="color" path="values\color.xml"/>
     <file name="skin" path="values\skin.xml"/>
+    <file name="skin_125" path="values\skin_125.xml"/>
+    <file name="skin_150" path="values\skin_150.xml"/>
+    <file name="skin_200" path="values\skin_200.xml"/>
   </values>
 
   <lang>
