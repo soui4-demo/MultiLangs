@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <skin>
+  <imgFrame3 name="main_bkg" src="img:main_bkg" margin="40,40,40,40" scale="200"/>
   <imglist name="scale_pic"	src="img:pic_100"/>
   <imgframe2 name="chat_bg" src="img:chat.9"/>
   <shape name="shape_test" shape="oval">

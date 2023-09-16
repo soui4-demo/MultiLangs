@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "MainDlg.h"
+#include "SSkinImgFrame3.h"
 
 //从PE文件加载，注意从文件加载路径位置
 #define RES_TYPE 0
@@ -60,6 +61,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
         {
             SASSERT(0);
         }
+		theApp->RegisterSkinClass<SSkinImgFrame3>();
 
         SAutoRefPtr<IResProvider>   pResProvider;
 #if (RES_TYPE == 0)

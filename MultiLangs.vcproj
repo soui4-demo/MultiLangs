@@ -221,6 +221,10 @@
 				RelativePath="MultiLangs.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\SSkinImgFrame3.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -233,6 +237,10 @@
 			</File>
 			<File
 				RelativePath="resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SSkinImgFrame3.h"
 				>
 			</File>
 			<File
