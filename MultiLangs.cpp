@@ -38,7 +38,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
         SAutoRefPtr<SOUI::IRenderFactory> pRenderFactory;
 		SAutoRefPtr<ITranslatorMgr> trans;                  //多语言翻译模块，由translator.dll提供
 
-        bLoaded = pComMgr->CreateRender_Skia((IObjRef**)&pRenderFactory);
+        bLoaded = pComMgr->CreateRender_GDI((IObjRef**)&pRenderFactory);
         SASSERT_FMT(bLoaded,_T("load interface [render] failed!"));
         bLoaded=pComMgr->CreateImgDecoder((IObjRef**)&pImgDecoderFactory);
         SASSERT_FMT(bLoaded,_T("load interface [%s] failed!"),_T("imgdecoder"));

@@ -28,6 +28,7 @@
     <file name="pic_150" path="image\pic_150.png"/>
     <file name="pic_200" path="image\pic_200.png"/>
     <file name="chat.9" path="image\chat.9.png"/>
+    <file name="png_tulips" path="image\Tulips.png"/>
   </img>
   <smenu>
     <file name="menu_lang" path="smenu\menu_lang.xml"/>

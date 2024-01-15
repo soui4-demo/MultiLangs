@@ -191,7 +191,7 @@ void CMainDlg::OnLanguage(int nID)
 		pTransMgr->SetLanguage(strName);
 		pTransMgr->InstallTranslator(lang);
 
-		SHostMgr::getSingletonPtr()->DispatchMessage(true,UM_SETLANGUAGE);
+		SHostMgr::getSingletonPtr()->DispatchMessage(UM_SETLANGUAGE);
 		SStringW strFontInfo;
 		lang->getFontInfo(&strFontInfo);
 		if(!strFontInfo.IsEmpty())
